@@ -1,9 +1,10 @@
 import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View, Dimensions} from "react-native";
 import {Card} from "react-native-elements";
 import Game from "./src/Game";
-import TrueFalseQuestion from "./src/TrueFalseQuestion";
-import Deck from "./src/Deck";
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default class App extends React.Component {
     render() {
@@ -11,22 +12,9 @@ export default class App extends React.Component {
             <View style={styles.container}>
                 <View style={styles.header}/>
                 <Game questions={Data} style={styles.game}/>
-                {/*<Deck data={Data}*/}
-                      {/*renderCard={this.renderCard}/>*/}
             </View>
         );
     }
-
-    renderCard(card) {
-        return (
-            <Card
-                key={card.id}
-                title={card.body}
-            >
-                <Text style={{marginBottom: 10}}>I can customize the card further</Text>
-            </Card>
-        );
-    };
 }
 
 const Data = [
@@ -92,10 +80,15 @@ const styles = StyleSheet.create({
         flex: 1
     },
     header: {
-        flex: 0.1,
-        backgroundColor:'green'
+        position: 'absolute',
+        width: SCREEN_WIDTH,
+        height: (1 / 10) * SCREEN_HEIGHT,
+        backgroundColor: 'green'
     },
     game: {
-        flex: 0.9
+        position: 'absolute',
+        width: SCREEN_WIDTH,
+        height: (9 / 10) * SCREEN_HEIGHT,
+        backgroundColor: 'blue'
     }
 });

@@ -36,7 +36,7 @@ export default class QuestionDeck extends Component {
 
     render() {
         return (
-            <View>
+            <View style={styles.container}>
                 <Deck data={this.props.questions}
                       renderCard={this.renderCard}/>
             </View>
@@ -46,6 +46,6 @@ export default class QuestionDeck extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1
     }
 });

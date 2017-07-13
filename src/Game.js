@@ -65,11 +65,3 @@ export default class Game extends Component {
         });
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT
-    },
-});

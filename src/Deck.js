@@ -5,8 +5,10 @@ import React, {Component} from "react";
 import {View, Animated, PanResponder, Dimensions, LayoutAnimation, UIManager} from "react-native";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
+const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: 50};
 
 export default class Deck extends Component {
     static defaultProps = {
@@ -19,11 +21,11 @@ export default class Deck extends Component {
     constructor(props) {
         super(props);
 
-        const position = new Animated.ValueXY();
+        const position = new Animated.ValueXY(INITIAL_CARD_ANIMATED_VALUE_XY);
         const panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => true, // disable if we don't want to move the cards
             onPanResponderMove: (event, gesture) => {
-                position.setValue({x: gesture.dx, y: gesture.dy});
+                position.setValue({x: INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx, y: INITIAL_CARD_ANIMATED_VALUE_XY.y + gesture.dy});
             },
             onPanResponderRelease: (event, gesture) => {
                 if (gesture.dx > SWIPE_THRESHOLD) {
@@ -57,8 +59,9 @@ export default class Deck extends Component {
 
     forceSwipe(direction) {
         const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
+        const y = INITIAL_CARD_ANIMATED_VALUE_XY.y;
         Animated.timing(this.position, {
-            toValue: {x, y: 0},
+            toValue: {x, y},
             duration: SWIPE_OUT_DURATION
         }).start(() => this.onSwipeComplete(direction));
     }
@@ -69,7 +72,7 @@ export default class Deck extends Component {
 
         direction === 'right' ? onSwipeRight(item) : onSwipeLeft(item);
 
-        this.position.setValue({x: 0, y: 0});
+        this.position.setValue(INITIAL_CARD_ANIMATED_VALUE_XY);
         this.setState({index: this.state.index + 1});
     }
 
@@ -87,7 +90,7 @@ export default class Deck extends Component {
 
     resetPosition() {
         Animated.spring(this.position, {
-            toValue: {x: 0, y: 0}
+            toValue: INITIAL_CARD_ANIMATED_VALUE_XY
         }).start();
     }
 
@@ -114,7 +117,7 @@ export default class Deck extends Component {
             return (
                 <Animated.View
                     key={item.id}
-                    style={[styles.cardStyle, {top: 10 * (i - this.state.index), zIndex: 5}]}
+                    style={[styles.cardStyle, {top: INITIAL_CARD_ANIMATED_VALUE_XY.y + 10 * (i - this.state.index), zIndex: 5}]}
                 >
                     {this.props.renderCard(item)}
                 </Animated.View>
@@ -124,7 +127,7 @@ export default class Deck extends Component {
 
     render() {
         return (
-            <View style={{width: SCREEN_WIDTH}}>
+            <View style={[styles.container, this.props.style]}>
                 {this.renderCards()}
             </View>
         );
@@ -132,8 +135,13 @@ export default class Deck extends Component {
 }
 
 const styles = {
+    container: {
+        // width: SCREEN_WIDTH
+        flex: 1
+    },
     cardStyle: {
         position: 'absolute',
-        width: SCREEN_WIDTH
+        width: SCREEN_WIDTH,
+        height: (6 / 10) * SCREEN_HEIGHT,
     }
 };

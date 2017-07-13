@@ -22,7 +22,7 @@ export default class TrueFalseQuestion extends Component {
     render() {
         return (
             <View style={styles.question}>
-                {/*<Text>some text</Text>*/}
+                <Text>some text</Text>
             </View>
         );
     }
@@ -31,7 +31,9 @@ export default class TrueFalseQuestion extends Component {
 const styles = {
     question: {
         // position: 'absolute',
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT / 2
+        // width: SCREEN_WIDTH,
+        // height: SCREEN_HEIGHT / 2,
+        flex: 1,
+        borderWidth: 1
     }
 };
