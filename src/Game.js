@@ -1,8 +1,10 @@
 /**
  * Created by guym on 24/06/2017.
  */
-import STYLES from "./styles.js";
-import QuestionDeck from "./questiondeck.js";
+import QuestionDeck from "./QuestionDeck";
+import {Card} from "react-native-elements";
+import TrueFalseQuestion from "./TrueFalseQuestion";
+import Deck from "./Deck";
 import React, {Component} from "react";
 import {
     AppRegistry,
@@ -18,6 +20,8 @@ import {
     TouchableWithoutFeedback
 } from "react-native";
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default class Game extends Component {
 
@@ -27,20 +31,27 @@ export default class Game extends Component {
             isGameOver: false,
             questionIndex: 0
         };
-
-        let winSize = Dimensions.get('window');
-        console.log(winSize);
     }
 
     render() {
         return (
-            <View style={STYLES.gameScreen}>
-                <View style={STYLES.header}/>
-                <QuestionDeck questions={this.props.questions}/>
-                <View style={STYLES.footer}/>
+            <View style={[this.props.style]}>
+                <QuestionDeck questions={this.props.questions}
+                      renderCard={this.renderCard}/>
             </View>
         );
     }
+
+    renderCard(card) {
+        return (
+            <Card
+                key={card.id}
+                title={card.body}
+            >
+                <Text style={{marginBottom: 10}}>I can customize the card further</Text>
+            </Card>
+        );
+    };
 
     onQuestionCompleted(question) {
         console.log('question completed:');
@@ -53,5 +64,12 @@ export default class Game extends Component {
             }
         });
     }
-
 }
+
+const styles = StyleSheet.create({
+    container: {
+        position: 'absolute',
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT
+    },
+});

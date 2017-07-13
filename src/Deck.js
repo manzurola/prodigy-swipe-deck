@@ -124,7 +124,7 @@ export default class Deck extends Component {
 
     render() {
         return (
-            <View>
+            <View style={{width: SCREEN_WIDTH}}>
                 {this.renderCards()}
             </View>
         );
