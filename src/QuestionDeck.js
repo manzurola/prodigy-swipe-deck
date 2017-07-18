@@ -4,6 +4,7 @@
 import React, {Component} from "react";
 import TrueFalseQuestion from "./TrueFalseQuestion";
 import Deck from "./Deck";
+import STYLES from "./Styles";
 import {
     AppRegistry,
     StyleSheet,
@@ -30,22 +31,16 @@ export default class QuestionDeck extends Component {
 
     renderCard(card) {
         return (
-            <TrueFalseQuestion {...card}/>
+            <TrueFalseQuestion style={STYLES.question} {...card}/>
         );
     };
 
     render() {
         return (
-            <View style={styles.container}>
+            <View >
                 <Deck data={this.props.questions}
                       renderCard={this.renderCard}/>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    }
-});

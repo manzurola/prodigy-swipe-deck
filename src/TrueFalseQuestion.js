@@ -21,8 +21,8 @@ export default class TrueFalseQuestion extends Component {
 
     render() {
         return (
-            <View style={styles.question}>
-                <Text>some text</Text>
+            <View style={[this.props.style, styles.question]}>
+                <Text style={styles.questionText}>some text</Text>
             </View>
         );
     }
@@ -30,10 +30,12 @@ export default class TrueFalseQuestion extends Component {
 
 const styles = {
     question: {
-        // position: 'absolute',
-        // width: SCREEN_WIDTH,
-        // height: SCREEN_HEIGHT / 2,
         flex: 1,
-        borderWidth: 1
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    questionText: {
+        fontSize: 24,
+        fontFamily: 'gloria-hallelujah-regular'
     }
 };

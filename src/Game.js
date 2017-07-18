@@ -36,22 +36,10 @@ export default class Game extends Component {
     render() {
         return (
             <View style={[this.props.style]}>
-                <QuestionDeck questions={this.props.questions}
-                      renderCard={this.renderCard}/>
+                <QuestionDeck questions={this.props.questions}/>
             </View>
         );
     }
-
-    renderCard(card) {
-        return (
-            <Card
-                key={card.id}
-                title={card.body}
-            >
-                <Text style={{marginBottom: 10}}>I can customize the card further</Text>
-            </Card>
-        );
-    };
 
     onQuestionCompleted(question) {
         console.log('question completed:');

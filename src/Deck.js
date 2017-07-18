@@ -8,7 +8,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const SWIPE_OUT_DURATION = 250;
-const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: 50};
+const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
 
 export default class Deck extends Component {
     static defaultProps = {
@@ -25,7 +25,8 @@ export default class Deck extends Component {
         const panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => true, // disable if we don't want to move the cards
             onPanResponderMove: (event, gesture) => {
-                position.setValue({x: INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx, y: INITIAL_CARD_ANIMATED_VALUE_XY.y + gesture.dy});
+                let dx = INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx;
+                position.setValue({x: dx, y: INITIAL_CARD_ANIMATED_VALUE_XY.y + gesture.dy});
             },
             onPanResponderRelease: (event, gesture) => {
                 if (gesture.dx > SWIPE_THRESHOLD) {
@@ -106,7 +107,7 @@ export default class Deck extends Component {
                 return (
                     <Animated.View
                         key={item.id}
-                        style={[this.getCardsStyle(), styles.cardStyle, {zIndex: 99}]}
+                        style={[styles.cardStyle, this.getCardsStyle(), {zIndex: 99}]}
                         {...this.panResponder.panHandlers}
                     >
                         {this.props.renderCard(item)}
@@ -117,7 +118,10 @@ export default class Deck extends Component {
             return (
                 <Animated.View
                     key={item.id}
-                    style={[styles.cardStyle, {top: INITIAL_CARD_ANIMATED_VALUE_XY.y + 10 * (i - this.state.index), zIndex: 5}]}
+                    style={[styles.cardStyle, {
+                        top: INITIAL_CARD_ANIMATED_VALUE_XY.y + 10 * (i - this.state.index),
+                        zIndex: 5
+                    }]}
                 >
                     {this.props.renderCard(item)}
                 </Animated.View>
@@ -127,7 +131,7 @@ export default class Deck extends Component {
 
     render() {
         return (
-            <View style={[styles.container, this.props.style]}>
+            <View style={[this.props.style]}>
                 {this.renderCards()}
             </View>
         );
@@ -135,13 +139,10 @@ export default class Deck extends Component {
 }
 
 const styles = {
-    container: {
-        // width: SCREEN_WIDTH
-        flex: 1
-    },
+
     cardStyle: {
         position: 'absolute',
         width: SCREEN_WIDTH,
-        height: (6 / 10) * SCREEN_HEIGHT,
+        height: (9 / 10) * SCREEN_HEIGHT
     }
 };

@@ -2,17 +2,39 @@ import React from "react";
 import {StyleSheet, Text, View, Dimensions} from "react-native";
 import {Card} from "react-native-elements";
 import Game from "./src/Game";
+import {Font} from "expo";
+import STYLES from "./src/Styles";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default class App extends React.Component {
+    state = {
+        fontLoaded: false,
+    };
+
+    async componentDidMount() {
+        await Font.loadAsync({
+            'gloria-hallelujah-regular': require('./assets/fonts/gloriahallelujah.ttf'),
+            'pacifico-regular': require('./assets/fonts/Pacifico.ttf'),
+        });
+
+        this.setState({fontLoaded: true});
+    }
+
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.header}/>
-                <Game questions={Data} style={styles.game}/>
-            </View>
+            this.state.fontLoaded ? (
+                    <View style={STYLES.container}>
+                        <View style={STYLES.header}>
+                            <View style={STYLES.divider.horizontal}/>
+                            <View style={STYLES.title}>
+                                <Text style={STYLES.titleText}>PRODIGY</Text>
+                            </View>
+                        </View>
+                        <Game questions={Data} style={STYLES.game}/>
+                    </View>
+                ) : null
         );
     }
 }
@@ -74,21 +96,3 @@ const Data = [
         ]
     }
 ];
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    header: {
-        position: 'absolute',
-        width: SCREEN_WIDTH,
-        height: (1 / 10) * SCREEN_HEIGHT,
-        backgroundColor: 'green'
-    },
-    game: {
-        position: 'absolute',
-        width: SCREEN_WIDTH,
-        height: (9 / 10) * SCREEN_HEIGHT,
-        backgroundColor: 'blue'
-    }
-});
