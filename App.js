@@ -43,10 +43,12 @@ const Data = [
     {
         id: 0,
         instructions: "fill in the blanks",
-        body: "Will you have ___ more tea?",
+        numOfChoices: 3,
+        sentence: ["Will you have ","", " more tea?"],
         answer: ["some"],
+        choiceAt: 1,
         choices: [
-            ["any", "some", "a"],
+            "any", "some", "a",
         ]
     },
     {
