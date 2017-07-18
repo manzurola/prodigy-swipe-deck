@@ -41,14 +41,14 @@ const STYLES = {
     question: {
         margin: 10,
         backgroundColor: 'white',
-        shadowColor: '#000000',
+        shadowColor: 'black',
         shadowOffset: {
             width: 0,
-            height: 3
+            height: 0
         },
         shadowRadius: 5,
-        shadowOpacity: 1.0,
-        borderRadius: 10,
+        shadowOpacity: 0.8,
+        borderRadius: 3,
         // overflow: 'hidden',
     }
 };

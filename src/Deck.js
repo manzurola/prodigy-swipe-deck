@@ -89,6 +89,23 @@ export default class Deck extends Component {
         };
     }
 
+    getCardsStyle(index) {
+
+        if (index === 1) {
+            // const stretch = this.
+        }
+
+        const rotate = this.position.x.interpolate({
+            inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
+            outputRange: ['-120deg', '0deg', '120deg']
+        });
+
+        return {
+            ...this.position.getLayout(),
+            transform: [{rotate}]
+        };
+    }
+
     resetPosition() {
         Animated.spring(this.position, {
             toValue: INITIAL_CARD_ANIMATED_VALUE_XY
@@ -101,7 +118,12 @@ export default class Deck extends Component {
         }
 
         return this.props.data.map((item, i) => {
+
+            // don't display swiped cards
+
             if (i < this.state.index) return null;
+
+            // first card in deck
 
             if (i === this.state.index) {
                 return (
@@ -115,12 +137,42 @@ export default class Deck extends Component {
                 );
             }
 
+            // second card in deck
+
+            const firstChildCardOffset = 50;
+
+            if (i === this.state.index + 1) {
+                return (
+                    <Animated.View
+
+                        key={item.id}
+                        style={[styles.cardStyle, {
+                            top: styles.cardStyle.top + firstChildCardOffset / 2,
+                            width: styles.cardStyle.width - firstChildCardOffset,
+                            left: styles.cardStyle.left + firstChildCardOffset / 2,
+                            height: styles.cardStyle.height - firstChildCardOffset,
+                            zIndex: 5,
+                        }]}
+                    >
+                        {this.props.renderCard(item)}
+                    </Animated.View>
+                )
+            }
+
+            // third child in deck
+
+            const secondChildCardOffset = firstChildCardOffset * 2;
+
             return (
                 <Animated.View
+
                     key={item.id}
                     style={[styles.cardStyle, {
-                        top: INITIAL_CARD_ANIMATED_VALUE_XY.y + 10 * (i - this.state.index),
-                        zIndex: 5
+                        top: styles.cardStyle.top + secondChildCardOffset / 2,
+                        width: styles.cardStyle.width - secondChildCardOffset,
+                        left: styles.cardStyle.left + secondChildCardOffset / 2,
+                        height: styles.cardStyle.height - secondChildCardOffset,
+                        zIndex: 1
                     }]}
                 >
                     {this.props.renderCard(item)}
@@ -141,6 +193,8 @@ export default class Deck extends Component {
 const styles = {
 
     cardStyle: {
+        top: INITIAL_CARD_ANIMATED_VALUE_XY.y,
+        left: 0,
         position: 'absolute',
         width: SCREEN_WIDTH,
         height: (9 / 10) * SCREEN_HEIGHT

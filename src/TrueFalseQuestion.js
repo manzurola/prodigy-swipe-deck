@@ -22,7 +22,7 @@ export default class TrueFalseQuestion extends Component {
     render() {
         return (
             <View style={[this.props.style, styles.question]}>
-                <Text style={styles.questionText}>some text</Text>
+                <Text style={styles.questionText}>This is an example sentence, but not a very long one.</Text>
             </View>
         );
     }
@@ -36,6 +36,9 @@ const styles = {
     },
     questionText: {
         fontSize: 24,
-        fontFamily: 'gloria-hallelujah-regular'
+        fontFamily: 'gloria-hallelujah-regular',
+        textAlign: 'center',
+        paddingLeft: 50,
+        paddingRight: 50,
     }
 };
