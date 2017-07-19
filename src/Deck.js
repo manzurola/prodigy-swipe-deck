@@ -7,6 +7,7 @@ import {View, Animated, PanResponder, Dimensions, LayoutAnimation, UIManager} fr
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
+const CLICK_THRESHOLD = 5;
 const SWIPE_OUT_DURATION = 250;
 const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
 
@@ -24,11 +25,32 @@ export default class Deck extends Component {
         const position = new Animated.ValueXY(INITIAL_CARD_ANIMATED_VALUE_XY);
         const panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => true, // disable if we don't want to move the cards
+            onPanResponderGrant: (event, gesture) => {
+                this.setState({
+                    touch: 'touch'
+                });
+                this.onTouch('start', this.state.index);
+                console.log('grant');
+            },
             onPanResponderMove: (event, gesture) => {
                 let dx = INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx;
                 position.setValue({x: dx, y: INITIAL_CARD_ANIMATED_VALUE_XY.y + gesture.dy});
             },
             onPanResponderRelease: (event, gesture) => {
+                if (gesture.dx <= CLICK_THRESHOLD && gesture.dy <= CLICK_THRESHOLD) {
+                    this.setState({
+                        touch: 'click'
+                    });
+                    this.onTouch('relase', this.state.index);
+                    console.log('click');
+                }
+                else {
+                    this.setState({
+                        touch: 'idle'
+                    });
+                    this.onTouch('cancel', this.state.index);
+                }
+
                 if (gesture.dx > SWIPE_THRESHOLD) {
                     this.forceSwipe('right');
                 } else if (gesture.dx < -SWIPE_THRESHOLD) {
@@ -45,6 +67,10 @@ export default class Deck extends Component {
         this.state = {
             index: 0
         }
+    }
+
+    onTouch(touch, index) {
+        this.props.onTouch('cancel', index);
     }
 
     componentWillReceiveProps(nextProps) {

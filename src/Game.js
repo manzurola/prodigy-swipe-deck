@@ -36,7 +36,7 @@ export default class Game extends Component {
     render() {
         return (
             <View style={[this.props.style]}>
-                <QuestionDeck questions={this.props.questions}/>
+                <QuestionDeck data={this.props.questions}/>
             </View>
         );
     }

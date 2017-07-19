@@ -40,7 +40,6 @@ const STYLES = {
     },
     question: {
         margin: 10,
-        backgroundColor: 'white',
         shadowColor: 'black',
         shadowOffset: {
             width: 0,
@@ -49,7 +48,33 @@ const STYLES = {
         shadowRadius: 5,
         shadowOpacity: 0.8,
         borderRadius: 3,
+        paddingLeft: 50,
+        paddingRight: 50,
         // overflow: 'hidden',
+    },
+    questionTouched: {
+        margin: 10,
+        shadowColor: 'black',
+        shadowOffset: {
+            width: 0,
+            height: 0
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.8,
+        borderRadius: 3,
+        paddingLeft: 50,
+        paddingRight: 50,
+        // overflow: 'hidden',
+    },
+    questionText: {
+        fontSize: 24,
+        fontFamily: 'gloria-hallelujah-regular',
+        textAlign: 'center',
+    },
+    highlightedQuestionText: {
+        fontSize: 28,
+        fontFamily: 'gloria-hallelujah-regular',
+        textDecorationLine: 'underline',
     }
 };
 

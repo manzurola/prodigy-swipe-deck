@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet, Text, View, Dimensions} from "react-native";
+import {StyleSheet, Text, View, Dimensions, StatusBar} from "react-native";
 import {Card} from "react-native-elements";
 import Game from "./src/Game";
 import {Font} from "expo";
@@ -26,6 +26,7 @@ export default class App extends React.Component {
         return (
             this.state.fontLoaded ? (
                     <View style={STYLES.container}>
+                        <StatusBar hidden={true} />
                         <View style={STYLES.header}>
                             <View style={STYLES.divider.horizontal}/>
                             <View style={STYLES.title}>
