@@ -98,40 +98,13 @@ export default class QuestionDeck extends Component {
     }
 
     renderCard(card) {
-        {/*if (this.state.touch === 'start') {*/}
-            {/*return (*/}
-                {/*<TrueFalseQuestion style={STYLES.question}*/}
-                                   {/*highlightedTextStyle={[STYLES.highlightedQuestionText]}*/}
-                                   {/*textStyle={STYLES.questionText}*/}
-                                   {/*selectedChoice={this.state.selectedChoice}*/}
-                                   {/*{...card} />*/}
-            {/*)*/}
-        {/*}*/}
-        {/*else if (this.state.touch === 'release') {*/}
-            {/*return (*/}
-                {/*<TrueFalseQuestion style={STYLES.question}*/}
-                                   {/*highlightedTextStyle={STYLES.highlightedQuestionText}*/}
-                                   {/*textStyle={STYLES.questionText}*/}
-                                   {/*selectedChoice={this.state.selectedChoice}*/}
-                                   {/*{...card} />*/}
-        //     )
-        // }
-        // else if (this.state.touch === 'cancel') {
-        //     return (
-        //         <TrueFalseQuestion style={STYLES.question}
-        //                            highlightedTextStyle={STYLES.highlightedQuestionText}
-        //                            textStyle={STYLES.questionText}
-        //                            selectedChoice={this.state.selectedChoice}
-        //                            {...card} />
-        //     )
-        // }
-
         return (
             <TrueFalseQuestion style={STYLES.question}
                                highlightedTextStyle={STYLES.highlightedQuestionText}
                                textStyle={STYLES.questionText}
+                               {...card}
                                selectedChoice={this.state.selectedChoice}
-                               {...card} />
+            />
         )
     };
 

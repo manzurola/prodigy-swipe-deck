@@ -45,6 +45,7 @@ const Data = [
         id: 0,
         instructions: "fill in the blanks",
         numOfChoices: 3,
+        selectedChoice: 0,
         sentence: ["Will you have ","", " more tea?"],
         answer: ["some"],
         choiceAt: 1,
