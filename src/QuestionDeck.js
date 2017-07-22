@@ -10,42 +10,10 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 const CLICK_THRESHOLD = 5;
-const SWIPE_OUT_DURATION = 250;
+const SWIPE_OUT_DURATION = 150;
 const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
 
 export default class QuestionDeck extends Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         swipedAllCards: false,
-    //         swipeDirection: "",
-    //         isSwipingBack: false,
-    //         cardIndex: 0
-    //     };
-    // }
-    //
-    // renderCard(card) {
-    //     return (
-    //         <TrueFalseQuestion ref={(input) => { this.questions.push(input); }} style={STYLES.question} {...card}/>
-    //     );
-    // };
-    //
-    // onTouch(touch, i) {
-    //     console.log("renderCardOnTouch");
-    //     return (
-    //         <TrueFalseQuestion style={STYLES.question} {...card}/>
-    //     );
-    // };
-    //
-    // render() {
-    //     return (
-    //         <View >
-    //             <Deck data={this.props.questions}
-    //                   renderCard={this.renderCard}
-    //                     onTouch={this.onTouch}/>
-    //         </View>
-    //     );
-    // }
 
     static defaultProps = {
         onSwipeRight: () => {
@@ -62,7 +30,6 @@ export default class QuestionDeck extends Component {
             onStartShouldSetPanResponder: () => true, // disable if we don't want to move the cards
             onPanResponderGrant: (event, gesture) => {
                 this.onTouch('start', this.state.index);
-                console.log('grant');
             },
             onPanResponderMove: (event, gesture) => {
                 let dx = INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx;
@@ -71,7 +38,6 @@ export default class QuestionDeck extends Component {
             onPanResponderRelease: (event, gesture) => {
                 if (gesture.dx <= CLICK_THRESHOLD && gesture.dy <= CLICK_THRESHOLD) {
                     this.onTouch('release', this.state.index);
-                    console.log('click');
                 }
                 else {
                     this.onTouch('cancel', this.state.index);
@@ -94,7 +60,9 @@ export default class QuestionDeck extends Component {
             index: 0,
             touch: "",
             selectedChoice: 0,
-        }
+        };
+
+        this.questions = {};
     }
 
     renderCard(card) {
@@ -104,27 +72,25 @@ export default class QuestionDeck extends Component {
                                textStyle={STYLES.questionText}
                                {...card}
                                selectedChoice={this.state.selectedChoice}
+                               ref={(question) => this.questions[card.id] = question}
             />
         )
     };
 
     onTouch(touch) {
         // this.props.onTouch('cancel', index);
-        console.log('onTouch');
         // this.setState({
         //     touch: touch
         // });
 
         if (touch === 'release') {
-            console.log('releaseing');
             this.changeChoices();
         }
     }
 
     changeChoices() {
         this.setState({
-            selectedChoice: this.state.selectedChoice + 1 === this.props.data[this.state.index].numOfChoices ?
-                0 :
+            selectedChoice: this.state.selectedChoice + 1 === this.props.data[this.state.index].numOfSentences ? 0 :
                 this.state.selectedChoice + 1
         })
     }
@@ -152,8 +118,9 @@ export default class QuestionDeck extends Component {
     onSwipeComplete(direction) {
         const {onSwipeLeft, onSwipeRight, data} = this.props;
         const item = data[this.state.index];
+        let question = this.questions[item.id];
 
-        direction === 'right' ? onSwipeRight(item) : onSwipeLeft(item);
+        direction === 'right' ? onSwipeRight(question) : onSwipeLeft(question);
 
         this.position.setValue(INITIAL_CARD_ANIMATED_VALUE_XY);
         this.setState({index: this.state.index + 1});
@@ -171,20 +138,37 @@ export default class QuestionDeck extends Component {
         };
     }
 
-    getCardsStyle(index) {
+    getSecondCardStyle() {
 
-        if (index === 1) {
-            // const stretch = this.
-        }
+        const cardWidth = styles.cardStyle.width;
+        const cardHeight = styles.cardStyle.height;
+        const cardLeft = styles.cardStyle.left;
+        const cardTop = styles.cardStyle.top;
 
-        const rotate = this.position.x.interpolate({
-            inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
-            outputRange: ['-120deg', '0deg', '120deg']
+        const inputRange = [-50, 0, 50];
+
+        const width = this.position.x.interpolate({
+            inputRange: inputRange,
+            outputRange: [cardWidth, styles.secondCardStyle.width, cardWidth]
+        });
+        const height = this.position.x.interpolate({
+            inputRange: inputRange,
+            outputRange: [cardHeight, styles.secondCardStyle.height, cardHeight]
+        });
+        const left = this.position.x.interpolate({
+            inputRange: inputRange,
+            outputRange: [cardLeft, styles.secondCardStyle.left, cardLeft]
+        });
+        const top = this.position.x.interpolate({
+            inputRange: inputRange,
+            outputRange: [cardTop, styles.secondCardStyle.top, cardTop]
         });
 
         return {
-            ...this.position.getLayout(),
-            transform: [{rotate}]
+            width: width,
+            height: height,
+            left: left,
+            top: top,
         };
     }
 
@@ -205,6 +189,10 @@ export default class QuestionDeck extends Component {
 
             if (i < this.state.index) return null;
 
+            // don't display third+ cards
+
+            // if (i > this.state.index + 1) return null;
+
             // first card in deck
 
             if (i === this.state.index) {
@@ -222,45 +210,18 @@ export default class QuestionDeck extends Component {
 
             // second card in deck
 
-            const firstChildCardOffset = 50;
+            const childOffset = 20;
 
-            if (i === this.state.index + 1) {
+            if (i >= this.state.index + 1) {
                 return (
                     <Animated.View
-
                         key={item.id}
-                        style={[styles.cardStyle, {
-                            top: styles.cardStyle.top + firstChildCardOffset / 2,
-                            width: styles.cardStyle.width - firstChildCardOffset,
-                            left: styles.cardStyle.left + firstChildCardOffset / 2,
-                            height: styles.cardStyle.height - firstChildCardOffset,
-                            zIndex: 5,
-                        }]}
+                        style={[styles.cardStyle, {zIndex: 5}]}
                     >
                         {this.renderCard(item)}
                     </Animated.View>
                 )
             }
-
-            // third child in deck
-
-            const secondChildCardOffset = firstChildCardOffset * 2;
-
-            return (
-                <Animated.View
-
-                    key={item.id}
-                    style={[styles.cardStyle, {
-                        top: styles.cardStyle.top + secondChildCardOffset / 2,
-                        width: styles.cardStyle.width - secondChildCardOffset,
-                        left: styles.cardStyle.left + secondChildCardOffset / 2,
-                        height: styles.cardStyle.height - secondChildCardOffset,
-                        zIndex: 1
-                    }]}
-                >
-                    {this.renderCard(item)}
-                </Animated.View>
-            )
         }).reverse();
     }
 
@@ -281,5 +242,13 @@ const styles = {
         position: 'absolute',
         width: SCREEN_WIDTH,
         height: (9 / 10) * SCREEN_HEIGHT
+    },
+    secondCardStyle: {
+        top: INITIAL_CARD_ANIMATED_VALUE_XY.y + 10,
+        left: 10,
+        position: 'absolute',
+        width: SCREEN_WIDTH - 20,
+        height: (9 / 10) * SCREEN_HEIGHT - 20
+
     }
 };

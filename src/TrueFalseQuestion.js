@@ -28,37 +28,25 @@ export default class TrueFalseQuestion extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("question received props " + nextProps.selectedChoice);
         this.setState({
             index: nextProps.selectedChoice
         });
-        // if (nextProps.data !== this.props.data) {
-        //     this.setState({index: nextProps.selectedChoice});
-        // }
-    }
-
-    componentDidUpdate() {
-        console.log('componentDidUpdate');
-        console.log(this.state);
     }
 
     render() {
-        console.log('render question with index ' + this.state.index);
         let sentences = [];
-        for (let i = 0; i < this.props.numOfChoices; i++) {
-
+        for (let i = 0; i < this.props.numOfSentences; i++) {
             let sentence = [];
-            for (let j = 0; j < this.props.sentence.length; j++) {
-                sentence.push(
-                    this.props.choiceAt === j ?
-                    <Text key={j} style={this.props.highlightedTextStyle}>{this.props.choices[i]}</Text> :
-                    <Text key={j}>{this.props.sentence[j]}</Text>
-                );
-                // console.log(sentence[this.props.choiceAt]);
-            }
-            sentences.push(sentence);
+            for (let j = 0; j < this.props.sentences[i].length; j++) {
 
-            // console.log(sentences);
+                sentence.push(
+                    this.props.choice === j ?
+                    <Text key={j} style={this.props.highlightedTextStyle}>{this.props.sentences[i][j]}</Text> :
+                    <Text key={j}>{this.props.sentences[i][j]}</Text>
+                );
+            }
+
+            sentences.push(sentence);
         }
 
         return (
@@ -67,6 +55,18 @@ export default class TrueFalseQuestion extends Component {
                 <Text style={[this.props.textStyle]}>{sentences[this.state.index]}</Text>
             </View>
         );
+    }
+
+    selectedChoice() {
+        return this.props.selectedChoice;
+    }
+
+    correctChoice(){
+        return this.props.correct;
+    }
+
+    difficulty() {
+        return this.props.difficulty;
     }
 
 }

@@ -48,8 +48,8 @@ const STYLES = {
         shadowRadius: 5,
         shadowOpacity: 0.8,
         borderRadius: 3,
-        paddingLeft: 50,
-        paddingRight: 50,
+        paddingLeft: 20,
+        paddingRight: 20,
         // overflow: 'hidden',
     },
     questionTouched: {

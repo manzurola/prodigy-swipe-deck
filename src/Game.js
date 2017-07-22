@@ -3,8 +3,6 @@
  */
 import QuestionDeck from "./QuestionDeck";
 import {Card} from "react-native-elements";
-import TrueFalseQuestion from "./TrueFalseQuestion";
-import Deck from "./Deck";
 import React, {Component} from "react";
 import {
     AppRegistry,
@@ -36,7 +34,9 @@ export default class Game extends Component {
     render() {
         return (
             <View style={[this.props.style]}>
-                <QuestionDeck data={this.props.questions}/>
+                <QuestionDeck data={this.props.questions}
+                              onSwipeRight={(question) => this.onSwipeRight(question)}
+                              onSwipeLeft={(question) => this.onSwipeLeft(question)}/>
             </View>
         );
     }
@@ -51,5 +51,27 @@ export default class Game extends Component {
                 questionIndex: gameOver ? previousState.questionIndex : previousState.questionIndex + 1
             }
         });
+    }
+
+    onSwipeRight(question) {
+        console.log("right");
+        if (question.selectedChoice() === question.correctChoice()) {
+            this.onCorrect(question);
+        } else this.onIncorrect(question);
+    }
+
+    onSwipeLeft(question) {
+        console.log("left");
+        if (question.selectedChoice() !== question.correctChoice()) {
+            this.onIncorrect(question);
+        } else this.onCorrect(question);
+    }
+
+    onCorrect(question) {
+        console.log('that was correct');
+    }
+
+    onIncorrect(question) {
+        console.log('that was incorrect');
     }
 }
