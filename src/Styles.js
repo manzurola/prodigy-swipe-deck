@@ -29,6 +29,14 @@ const STYLES = {
     titleText: {
         fontFamily: 'pacifico-regular'
     },
+    score: {
+        position: 'absolute',
+        right: 0,
+        width: SCREEN_WIDTH / 4,
+        height: (1 / 10) * SCREEN_HEIGHT,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     divider: {
         horizontal: {
             position: 'absolute',

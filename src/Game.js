@@ -2,6 +2,7 @@
  * Created by guym on 24/06/2017.
  */
 import QuestionDeck from "./QuestionDeck";
+import Score from "./Score";
 import {Card} from "react-native-elements";
 import React, {Component} from "react";
 import {
@@ -27,13 +28,17 @@ export default class Game extends Component {
         super(props);
         this.state = {
             isGameOver: false,
-            questionIndex: 0
+            questionIndex: 0,
+            score: 0
         };
     }
 
     render() {
         return (
             <View style={[this.props.style]}>
+                <Score style={this.props.scoreStyle}
+                       score={this.state.score}
+                />
                 <QuestionDeck data={this.props.questions}
                               onSwipeRight={(question) => this.onSwipeRight(question)}
                               onSwipeLeft={(question) => this.onSwipeLeft(question)}/>
@@ -69,9 +74,11 @@ export default class Game extends Component {
 
     onCorrect(question) {
         console.log('that was correct');
+        this.setState({score: this.state.score + 1});
     }
 
     onIncorrect(question) {
         console.log('that was incorrect');
+        this.setState({score: this.state.score - 1});
     }
 }

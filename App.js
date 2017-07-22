@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, Dimensions, StatusBar} from "react-native";
 import {Card} from "react-native-elements";
 import Game from "./src/Game";
 import {Font} from "expo";
+import Score from "./src/Score";
 import STYLES from "./src/Styles";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -33,7 +34,10 @@ export default class App extends React.Component {
                                 <Text style={STYLES.titleText}>PRODIGY</Text>
                             </View>
                         </View>
-                        <Game questions={Questions} style={STYLES.game}/>
+                        <Game questions={Questions}
+                              style={STYLES.game}
+                              scoreStyle={STYLES.score}
+                        />
                     </View>
                 ) : null
         );
