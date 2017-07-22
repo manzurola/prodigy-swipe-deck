@@ -57,6 +57,10 @@ export default class TrueFalseQuestion extends Component {
         );
     }
 
+    id () {
+        return this.props;
+    }
+
     selectedChoice() {
         return this.props.selectedChoice;
     }

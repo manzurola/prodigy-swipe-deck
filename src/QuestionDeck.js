@@ -11,14 +11,15 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.15 * SCREEN_WIDTH;
 const CLICK_THRESHOLD = 5;
 const SWIPE_OUT_DURATION = 250;
-const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
+// const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
+const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: 0};
 
 export default class QuestionDeck extends Component {
 
     static defaultProps = {
-        onSwipeRight: () => {
+        onCorrect: () => {
         },
-        onSwipeLeft: () => {
+        onIncorrect: () => {
         }
     };
 
@@ -74,7 +75,8 @@ export default class QuestionDeck extends Component {
             index: 0,
             touch: "",
             selectedChoice: 0,
-            responderMovePoint: {x: 0, y: 0}
+            responderMovePoint: {x: 0, y: 0},
+            isChoiceCorrect: false,
         };
 
         this.questions = {};
@@ -139,7 +141,7 @@ export default class QuestionDeck extends Component {
 
         let dx = vector.x2 - vector.x1;
         let dy = vector.y2 - vector.y1;
-        let m = dx/dy;
+        let m = dx / dy;
 
         // const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
         // const y = vector.y1 + m * (x - vector.x1);
@@ -158,14 +160,30 @@ export default class QuestionDeck extends Component {
     }
 
     onSwipeComplete(direction) {
-        const {onSwipeLeft, onSwipeRight, data} = this.props;
+        const {onIncorrect, onCorrect, data} = this.props;
         const item = data[this.state.index];
-        let question = this.questions[item.id];
+        item.selectedChoice = this.state.selectedChoice;
 
-        direction === 'right' ? onSwipeRight(question) : onSwipeLeft(question);
+        let isCorrect = direction === 'right' && this.state.isChoiceCorrect || direction === 'left' && !this.state.isChoiceCorrect;
+
+        let event = {
+            id: item.id,
+            selectedChoice: this.state.selectedChoice,
+            isCorrect
+        };
+
+        direction === 'right' ? onCorrect(event) : onIncorrect(event);
 
         this.position.setValue(INITIAL_CARD_ANIMATED_VALUE_XY);
         this.setState({index: this.state.index + 1});
+    }
+
+    onCorrect() {
+
+    }
+
+    onIncorrect() {
+
     }
 
     getCardsStyle() {
@@ -269,7 +287,7 @@ export default class QuestionDeck extends Component {
 
     render() {
         return (
-            <View style={[this.props.style]}>
+            <View style={[STYLES.questionDeck, this.props.style]}>
                 {this.renderCards()}
             </View>
         );

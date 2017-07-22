@@ -25,10 +25,6 @@ export default class Score extends Component {
         }
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({score: props.score});
-    }
-
     render() {
         return (
             <View style={this.props.style}>

@@ -30,7 +30,14 @@ export default class Game extends Component {
         this.state = {
             isGameOver: false,
             questionIndex: 0,
-            score: 0
+            score: 0,
+            // swipedRightCorrect : [],
+            // swipedRightIncorrect : [],
+            // swipedLeftCorrect : [],
+            // swipedLeftIncorrect : [],
+            totalCorrect: 0,
+            totalIncorrect: 0,
+            totalQuestions: props.questions.length,
         };
     }
 
@@ -41,16 +48,18 @@ export default class Game extends Component {
                        score={this.state.score}
                 />
                 <QuestionDeck data={this.props.questions}
-
-                              renderNoMoreCards={this.renderLevelComplete}
+                              onCorrect={() => this.onCorrect()}
+                              onIncorrect={() => this.onIncorrect()}
+                              renderNoMoreCards={() => this.renderLevelComplete()}
                 />
             </View>
         );
     }
 
     renderLevelComplete() {
+        let score = Math.floor((this.state.totalCorrect / this.state.totalQuestions) * 100);
         return (
-            <LessonComplete/>
+            <LessonComplete score={score}/>
         )
     }
 
@@ -64,25 +73,36 @@ export default class Game extends Component {
         });
     }
 
-    onSwipeRight(question) {
-        if (question.selectedChoice() === question.correctChoice()) {
-            this.onCorrect(question);
-        } else this.onIncorrect(question);
+    onSwipeRight(event) {
+        if (event.isCorrect) {
+            this.setState({totalCorrect: this.state.totalCorrect + 1});
+            this.onCorrect(event);
+        } else {
+            this.setState({totalIncorrect: this.state.totalIncorrect + 1});
+            this.onIncorrect(event);
+        }
     }
 
-    onSwipeLeft(question) {
-        if (question.selectedChoice() !== question.correctChoice()) {
-            this.onIncorrect(question);
-        } else this.onCorrect(question);
+    onSwipeLeft(event) {
+        if (event.selectedChoice() !== event.correctChoice()) {
+            this.setState({totalIncorrect: this.state.totalIncorrect + 1});
+            this.onIncorrect(event);
+        } else {
+            this.setState({totalCorrect: this.state.totalCorrect + 1});
+            this.onCorrect(event);
+        }
     }
 
-    onCorrect(question) {
-        // console.log('that was correct');
+    onCorrect() {
+        console.log('that was correct');
+        this.setState({totalCorrect: this.state.totalCorrect + 1});
         // this.setState({score: this.state.score + 1});
     }
 
-    onIncorrect(question) {
-        // console.log('that was incorrect');
+    onIncorrect() {
+        console.log('that was incorrect');
+        this.setState({totalIncorrect: this.state.totalIncorrect + 1});
+
         // this.setState({score: this.state.score - 1});
     }
 }

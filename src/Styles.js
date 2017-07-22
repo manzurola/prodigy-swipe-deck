@@ -85,6 +85,12 @@ const STYLES = {
         fontSize: 28,
         fontFamily: 'gloria-hallelujah-regular',
         textDecorationLine: 'underline',
+    },
+    questionDeck: {
+        position: 'absolute',
+        top: (1/10) * SCREEN_HEIGHT,
+        width: SCREEN_WIDTH,
+        height: (9/10) * SCREEN_HEIGHT
     }
 };
 

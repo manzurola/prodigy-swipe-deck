@@ -12,6 +12,7 @@ export default class LessonComplete extends Component {
         return (
             <View style={styles.container}>
                 <Text>Lesson Complete!</Text>
+                <Text>Score: {this.props.score}</Text>
             </View>
         )
     }
@@ -19,6 +20,8 @@ export default class LessonComplete extends Component {
 
 const styles = {
     container: {
-        flex: 1
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 };
