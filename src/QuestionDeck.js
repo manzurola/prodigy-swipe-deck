@@ -8,9 +8,9 @@ import STYLES from "./Styles";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
+const SWIPE_THRESHOLD = 0.15 * SCREEN_WIDTH;
 const CLICK_THRESHOLD = 5;
-const SWIPE_OUT_DURATION = 150;
+const SWIPE_OUT_DURATION = 250;
 const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
 
 export default class QuestionDeck extends Component {
@@ -29,24 +29,38 @@ export default class QuestionDeck extends Component {
         const panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => true, // disable if we don't want to move the cards
             onPanResponderGrant: (event, gesture) => {
-                this.onTouch('start', this.state.index);
+                // this.onTouch('start', this.state.index);
+                this.setState({responderMovePoint: {x: gesture.dx, y: gesture.dy}})
             },
             onPanResponderMove: (event, gesture) => {
                 let dx = INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx;
-                position.setValue({x: dx, y: INITIAL_CARD_ANIMATED_VALUE_XY.y + gesture.dy});
+                let dy = INITIAL_CARD_ANIMATED_VALUE_XY.y + gesture.dy;
+                position.setValue({x: dx, y: dy});
             },
             onPanResponderRelease: (event, gesture) => {
-                if (gesture.dx <= CLICK_THRESHOLD && gesture.dy <= CLICK_THRESHOLD) {
-                    this.onTouch('release', this.state.index);
-                }
-                else {
-                    this.onTouch('cancel', this.state.index);
-                }
+                // if (gesture.dx <= CLICK_THRESHOLD && gesture.dy <= CLICK_THRESHOLD) {
+                //     this.onTouch('release', this.state.index);
+                // }
+                // else {
+                //     this.onTouch('cancel', this.state.index);
+                // }
+
+                let vector = {
+                    x1: this.state.responderMovePoint.x,
+                    y1: this.state.responderMovePoint.y,
+                    x2: gesture.dx,
+                    y2: gesture.dy
+
+                };
+
+                console.log("here");
 
                 if (gesture.dx > SWIPE_THRESHOLD) {
-                    this.forceSwipe('right');
+                    this.forceSwipe('right', vector);
+                    // this.forceSwipe('right');
                 } else if (gesture.dx < -SWIPE_THRESHOLD) {
-                    this.forceSwipe('left');
+                    this.forceSwipe('left', vector);
+                    // this.forceSwipe('left');
                 } else {
                     this.resetPosition();
                 }
@@ -60,6 +74,7 @@ export default class QuestionDeck extends Component {
             index: 0,
             touch: "",
             selectedChoice: 0,
+            responderMovePoint: {x: 0, y: 0}
         };
 
         this.questions = {};
@@ -72,7 +87,7 @@ export default class QuestionDeck extends Component {
                                textStyle={STYLES.questionText}
                                {...card}
                                selectedChoice={this.state.selectedChoice}
-                               ref={(question) => this.questions[card.id] = question}
+
             />
         )
     };
@@ -101,14 +116,41 @@ export default class QuestionDeck extends Component {
         }
     }
 
-    componentWillUpdate() {
-        UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-        LayoutAnimation.spring();
-    }
+    // componentWillUpdate() {
+    //     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+    //     LayoutAnimation.spring();
+    // }
 
-    forceSwipe(direction) {
-        const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
-        const y = INITIAL_CARD_ANIMATED_VALUE_XY.y;
+    // forceSwipe(direction) {
+    //     const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
+    //     const y = INITIAL_CARD_ANIMATED_VALUE_XY.y;
+    //     Animated.timing(this.position, {
+    //         toValue: {x, y},
+    //         duration: SWIPE_OUT_DURATION
+    //     }).start(() => this.onSwipeComplete(direction));
+    // }
+
+    forceSwipe(direction, vector) {
+
+        console.log(vector.x1);
+        console.log(vector.y1);
+
+        //calculate point on same vector but out of screen
+
+        let dx = vector.x2 - vector.x1;
+        let dy = vector.y2 - vector.y1;
+        let m = dx/dy;
+
+        // const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
+        // const y = vector.y1 + m * (x - vector.x1);
+
+        const x = vector.x2 * 5;
+        const y = vector.y2 * 5;
+
+        console.log(x);
+        console.log(y);
+
+        // const y = INITIAL_CARD_ANIMATED_VALUE_XY.y;
         Animated.timing(this.position, {
             toValue: {x, y},
             duration: SWIPE_OUT_DURATION
@@ -129,7 +171,7 @@ export default class QuestionDeck extends Component {
     getCardsStyle() {
         const rotate = this.position.x.interpolate({
             inputRange: [-SCREEN_WIDTH * 1.5, 0, SCREEN_WIDTH * 1.5],
-            outputRange: ['-120deg', '0deg', '120deg']
+            outputRange: ['-60deg', '0deg', '60deg']
         });
 
         return {
@@ -191,7 +233,7 @@ export default class QuestionDeck extends Component {
 
             // don't display third+ cards
 
-            // if (i > this.state.index + 1) return null;
+            if (i > this.state.index + 1) return null;
 
             // first card in deck
 
@@ -208,11 +250,11 @@ export default class QuestionDeck extends Component {
                 );
             }
 
-            // second card in deck
+            // second card up in deck
 
             const childOffset = 20;
 
-            if (i >= this.state.index + 1) {
+            if (i === this.state.index + 1) {
                 return (
                     <Animated.View
                         key={item.id}
@@ -238,7 +280,7 @@ const styles = {
 
     cardStyle: {
         top: INITIAL_CARD_ANIMATED_VALUE_XY.y,
-        left: 0,
+        // left: 0,
         position: 'absolute',
         width: SCREEN_WIDTH,
         height: (9 / 10) * SCREEN_HEIGHT

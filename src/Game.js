@@ -3,6 +3,7 @@
  */
 import QuestionDeck from "./QuestionDeck";
 import Score from "./Score";
+import LessonComplete from "./LessonComplete";
 import {Card} from "react-native-elements";
 import React, {Component} from "react";
 import {
@@ -40,15 +41,20 @@ export default class Game extends Component {
                        score={this.state.score}
                 />
                 <QuestionDeck data={this.props.questions}
-                              onSwipeRight={(question) => this.onSwipeRight(question)}
-                              onSwipeLeft={(question) => this.onSwipeLeft(question)}/>
+
+                              renderNoMoreCards={this.renderLevelComplete}
+                />
             </View>
         );
     }
 
+    renderLevelComplete() {
+        return (
+            <LessonComplete/>
+        )
+    }
+
     onQuestionCompleted(question) {
-        console.log('question completed:');
-        console.log(question);
         this.setState((previousState) => {
             let gameOver = this.props.questions.length === previousState.questionIndex + 1;
             return {
@@ -59,26 +65,24 @@ export default class Game extends Component {
     }
 
     onSwipeRight(question) {
-        console.log("right");
         if (question.selectedChoice() === question.correctChoice()) {
             this.onCorrect(question);
         } else this.onIncorrect(question);
     }
 
     onSwipeLeft(question) {
-        console.log("left");
         if (question.selectedChoice() !== question.correctChoice()) {
             this.onIncorrect(question);
         } else this.onCorrect(question);
     }
 
     onCorrect(question) {
-        console.log('that was correct');
-        this.setState({score: this.state.score + 1});
+        // console.log('that was correct');
+        // this.setState({score: this.state.score + 1});
     }
 
     onIncorrect(question) {
-        console.log('that was incorrect');
-        this.setState({score: this.state.score - 1});
+        // console.log('that was incorrect');
+        // this.setState({score: this.state.score - 1});
     }
 }

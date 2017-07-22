@@ -74,6 +74,7 @@ export default class TrueFalseQuestion extends Component {
 const styles = {
     container: {
         flex: 1,
+        // position:'absolute',
         justifyContent: 'center',
         alignItems: 'center',
     },

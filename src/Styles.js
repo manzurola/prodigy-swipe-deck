@@ -48,16 +48,18 @@ const STYLES = {
     },
     question: {
         margin: 10,
-        shadowColor: 'black',
-        shadowOffset: {
-            width: 0,
-            height: 0
-        },
-        shadowRadius: 5,
-        shadowOpacity: 0.8,
+        // shadowColor: 'black',
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 0
+        // },
+        // shadowRadius: 5,
+        // shadowOpacity: 0.8,
         borderRadius: 3,
+        borderWidth: 1,
         paddingLeft: 20,
         paddingRight: 20,
+        backgroundColor: 'white',
         // overflow: 'hidden',
     },
     questionTouched: {
