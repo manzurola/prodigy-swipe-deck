@@ -10,9 +10,22 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.15 * SCREEN_WIDTH;
 const CLICK_THRESHOLD = 5;
-const SWIPE_OUT_DURATION = 250;
+const SWIPE_OUT_DURATION = 150;
 // const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: (1 / 10 * SCREEN_HEIGHT)};
 const INITIAL_CARD_ANIMATED_VALUE_XY = {x: 0, y: 0};
+
+const CustomLayoutSpring = {
+    duration: 300,
+    create: {
+        type: LayoutAnimation.Types.spring,
+        property: LayoutAnimation.Properties.scaleXY,
+        springDamping: 0.7,
+    },
+    update: {
+        type: LayoutAnimation.Types.spring,
+        springDamping: 0.7,
+    },
+};
 
 export default class QuestionDeck extends Component {
 
@@ -31,7 +44,7 @@ export default class QuestionDeck extends Component {
             onStartShouldSetPanResponder: () => true, // disable if we don't want to move the cards
             onPanResponderGrant: (event, gesture) => {
                 // this.onTouch('start', this.state.index);
-                this.setState({responderMovePoint: {x: gesture.dx, y: gesture.dy}})
+                this.responderMovePoint = {x: gesture.dx, y: gesture.dy};
             },
             onPanResponderMove: (event, gesture) => {
                 let dx = INITIAL_CARD_ANIMATED_VALUE_XY.x + gesture.dx;
@@ -47,8 +60,8 @@ export default class QuestionDeck extends Component {
                 // }
 
                 let vector = {
-                    x1: this.state.responderMovePoint.x,
-                    y1: this.state.responderMovePoint.y,
+                    x1: this.responderMovePoint.x,
+                    y1: this.responderMovePoint.y,
                     x2: gesture.dx,
                     y2: gesture.dy
 
@@ -70,15 +83,14 @@ export default class QuestionDeck extends Component {
 
         this.position = position;
         this.panResponder = panResponder;
+        this.responderMovePoint = {x: 0, y: 0};
 
         this.state = {
             index: 0,
             touch: "",
             selectedChoice: 0,
-            responderMovePoint: {x: 0, y: 0},
             isChoiceCorrect: false,
         };
-
         this.questions = {};
     }
 
@@ -88,7 +100,7 @@ export default class QuestionDeck extends Component {
                                highlightedTextStyle={STYLES.highlightedQuestionText}
                                textStyle={STYLES.questionText}
                                {...card}
-                               selectedChoice={this.state.selectedChoice}
+                //selectedChoice={this.state.selectedChoice}
 
             />
         )
@@ -118,10 +130,11 @@ export default class QuestionDeck extends Component {
         }
     }
 
-    // componentWillUpdate() {
-    //     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-    //     LayoutAnimation.spring();
-    // }
+    componentWillUpdate() {
+        UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+        // LayoutAnimation.spring();
+        LayoutAnimation.configureNext(CustomLayoutSpring);
+    }
 
     // forceSwipe(direction) {
     //     const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
@@ -146,8 +159,9 @@ export default class QuestionDeck extends Component {
         // const x = direction === 'right' ? SCREEN_WIDTH : -SCREEN_WIDTH;
         // const y = vector.y1 + m * (x - vector.x1);
 
-        const x = vector.x2 * 5;
-        const y = vector.y2 * 5;
+        const distanceFactor = 5;
+        const x = vector.x2 * distanceFactor;
+        const y = vector.y2 * distanceFactor;
 
         console.log(x);
         console.log(y);
@@ -162,9 +176,11 @@ export default class QuestionDeck extends Component {
     onSwipeComplete(direction) {
         const {onIncorrect, onCorrect, data} = this.props;
         const item = data[this.state.index];
-        item.selectedChoice = this.state.selectedChoice;
+        // item.selectedChoice = this.state.selectedChoice;
 
-        let isCorrect = direction === 'right' && this.state.isChoiceCorrect || direction === 'left' && !this.state.isChoiceCorrect;
+        // a correct solution is if the player swiped right a correct sentence or swiped left an incorrect sentence
+        let isCorrect = direction === 'right' && item.correct === item.selectedChoice ||
+            direction === 'left' && item.correct !== item.selectedChoice;
 
         let event = {
             id: item.id,
@@ -172,7 +188,7 @@ export default class QuestionDeck extends Component {
             isCorrect
         };
 
-        direction === 'right' ? onCorrect(event) : onIncorrect(event);
+        isCorrect ? onCorrect(event) : onIncorrect(event);
 
         this.position.setValue(INITIAL_CARD_ANIMATED_VALUE_XY);
         this.setState({index: this.state.index + 1});
@@ -251,7 +267,7 @@ export default class QuestionDeck extends Component {
 
             // don't display third+ cards
 
-            if (i > this.state.index + 1) return null;
+            // if (i > this.state.index + 1) return null;
 
             // first card in deck
 
@@ -269,19 +285,29 @@ export default class QuestionDeck extends Component {
             }
 
             // second card up in deck
+            let relativeIndex = i - this.state.index;
+            const topOffset = 12 * relativeIndex;
+            const leftOffset = 5 * relativeIndex;
+            const widthOffset = 10 * relativeIndex;
+            const heightOffset = 10 * relativeIndex;
 
-            const childOffset = 20;
-
-            if (i === this.state.index + 1) {
-                return (
-                    <Animated.View
-                        key={item.id}
-                        style={[styles.cardStyle, {zIndex: 5}]}
-                    >
-                        {this.renderCard(item)}
-                    </Animated.View>
-                )
-            }
+            // if (i > this.state.index) {
+            // if (i === this.state.index + 1) {
+            return (
+                <Animated.View
+                    key={item.id}
+                    style={[styles.cardStyle, {
+                        top: styles.cardStyle.top + topOffset,
+                        left: leftOffset,
+                        width: styles.cardStyle.width - widthOffset,
+                        height: styles.cardStyle.height - heightOffset,
+                        zIndex: 5
+                    }]}
+                >
+                    {this.renderCard(item)}
+                </Animated.View>
+            );
+            // }
         }).reverse();
     }
 
@@ -301,7 +327,7 @@ const styles = {
         // left: 0,
         position: 'absolute',
         width: SCREEN_WIDTH,
-        height: (9 / 10) * SCREEN_HEIGHT
+        height: (8 / 10) * SCREEN_HEIGHT
     },
     secondCardStyle: {
         top: INITIAL_CARD_ANIMATED_VALUE_XY.y + 10,

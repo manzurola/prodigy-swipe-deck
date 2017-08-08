@@ -2,7 +2,6 @@
  * Created by guym on 24/06/2017.
  */
 import QuestionDeck from "./QuestionDeck";
-import Score from "./Score";
 import LessonComplete from "./LessonComplete";
 import {Card} from "react-native-elements";
 import React, {Component} from "react";
@@ -19,6 +18,7 @@ import {
     TouchableHighlight,
     TouchableWithoutFeedback
 } from "react-native";
+import STYLES from "./Styles";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -37,16 +37,28 @@ export default class Game extends Component {
             // swipedLeftIncorrect : [],
             totalCorrect: 0,
             totalIncorrect: 0,
-            totalQuestions: props.questions.length,
+            progress: 0,
+            solved: [-1, -1, -1, -1, -1]  // 0 or 1 indicating mistake or correct respectively
         };
+
+        this.totalQuestions = props.questions.length;
     }
 
     render() {
         return (
             <View style={[this.props.style]}>
-                <Score style={this.props.scoreStyle}
-                       score={this.state.score}
-                />
+                <View style={STYLES.questionStatusContainer}>
+                    <View
+                        style={this.getQuestionStatusStyle(0)}/>
+                    <View
+                        style={this.getQuestionStatusStyle(1)}/>
+                    <View
+                        style={this.getQuestionStatusStyle(2)}/>
+                    <View
+                        style={this.getQuestionStatusStyle(3)}/>
+                    <View
+                        style={this.getQuestionStatusStyle(4)}/>
+                </View>
                 <QuestionDeck data={this.props.questions}
                               onCorrect={() => this.onCorrect()}
                               onIncorrect={() => this.onIncorrect()}
@@ -56,8 +68,14 @@ export default class Game extends Component {
         );
     }
 
+    getQuestionStatusStyle(index) {
+        // if index references a question yet unsolved then return default style
+        if (this.state.solved[index] === -1) return STYLES.questionStatus;
+        return this.state.solved[index] === 1 ? STYLES.questionStatusCorrect : STYLES.questionStatusIncorrect;
+    }
+
     renderLevelComplete() {
-        let score = Math.floor((this.state.totalCorrect / this.state.totalQuestions) * 100);
+        let score = Math.floor((this.state.totalCorrect / this.props.questions.length) * 100);
         return (
             <LessonComplete score={score}/>
         )
@@ -84,7 +102,7 @@ export default class Game extends Component {
     }
 
     onSwipeLeft(event) {
-        if (event.selectedChoice() !== event.correctChoice()) {
+        if (!event.isCorrect) {
             this.setState({totalIncorrect: this.state.totalIncorrect + 1});
             this.onIncorrect(event);
         } else {
@@ -95,13 +113,26 @@ export default class Game extends Component {
 
     onCorrect() {
         console.log('that was correct');
-        this.setState({totalCorrect: this.state.totalCorrect + 1});
+        const newSolved = this.state.solved.slice();
+        newSolved[this.state.questionIndex] = 1;
+        this.setState({
+            totalCorrect: this.state.totalCorrect + 1,
+            progress: this.state.progress + 100 / this.props.questions.length,
+            questionIndex: this.state.questionIndex + 1,
+            solved: newSolved
+        });
         // this.setState({score: this.state.score + 1});
     }
 
     onIncorrect() {
         console.log('that was incorrect');
-        this.setState({totalIncorrect: this.state.totalIncorrect + 1});
+        const newSolved = this.state.solved.slice();
+        newSolved[this.state.questionIndex] = 0;
+        this.setState({
+            totalIncorrect: this.state.totalIncorrect + 1,
+            questionIndex: this.state.questionIndex + 1,
+            solved: newSolved
+        });
 
         // this.setState({score: this.state.score - 1});
     }
